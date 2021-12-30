@@ -1,0 +1,32 @@
+{
+  "name": "pizza-avec-deux-z",
+  "version": "0.0.0",
+  "description": "site pour faire des exos de maths",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo Choose a test command",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Tartasprint/pizza-avec-deux-z.git"
+  },
+  "keywords": [
+    "math"
+  ],
+  "author": "Matteo Pouillat",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/Tartasprint/pizza-avec-deux-z/issues"
+  },
+  "homepage": "https://github.com/Tartasprint/pizza-avec-deux-z#readme",
+  "dependencies": {
+    "bootstrap": "^5.1.3",
+    "express": "^4.17.2",
+    "jade-bootstrap": "^1.0.14",
+    "katex": "^0.15.1",
+    "markdown-it": "^12.3.0",
+    "markdown-it-texmath": "^0.9.7",
+    "pug": "^3.0.2"
+  }
+}
