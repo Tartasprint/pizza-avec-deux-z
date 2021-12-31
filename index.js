@@ -1,42 +1,25 @@
-const express = require('express');
-const tm = require('markdown-it-texmath');
-const md = require('markdown-it')({ html: true })
-  .use(tm, {
-    engine: require('katex'),
-    delimiters: 'dollars',
-    katexOptions: { macros: { "\\RR": "\\mathbb{R}" } }
-  });
 const fs = require('fs')
 const https = require('https')
 const config = require('./config')
-const app = express();
 const { WebSocketServer } = require('ws');
-const static = require('./static');
 
-app.use('/static', static)
+const {app,server} = require('./app')
 
-app.get('/editor', function (req, res) {
-  res.render('editor', {
-    title: 'Hey', content: md.render(
-      fs.readFileSync('./page/test.md').toString()
-    )
-  })
-})
+//#region Mongo DB
+const mongoose = require('mongoose')
+const mongoDB = `mongodb://${config.mongodb_server_host}:${config.mongodb_server_port}/${config.database}`;
+mongoose.connect(mongoDB, {useNewUrlParser: true, useUnifiedTopology: true});
+var db = mongoose.connection
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+//#endregion
 
-
-app.get('/', function (req, res) {
-  res.render('index', {
-    title: 'Hey', content: md.render(
-      fs.readFileSync('./page/test.md').toString()
-    )
-  })
-})
-
+//#region Websocket
 const wsserver = https.createServer({
   key: fs.readFileSync('key.pem'),
   cert: fs.readFileSync('cert.pem')
 })
 const wss = new WebSocketServer({ server: wsserver });
+
 
 wss.on('connection', socket => {
   console.log("New connection")
@@ -44,9 +27,6 @@ wss.on('connection', socket => {
   socket.on('close', ()=> console.log("Connection closed"))
 });
 
-const server = app.listen(config.normal_port, function () {
-  console.log(`Normal server listening on port ${config.normal_port}!`)
-});
 wsserver.listen(config.ws_port, function () {
   console.log(`Websocket server listening on port ${config.ws_port}!`)
 });
@@ -56,3 +36,4 @@ server.on('upgrade', (request, socket, head) => {
     wss.emit('connection', socket, request);
   });
 });
+//#endregion

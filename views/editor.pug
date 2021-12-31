@@ -1,6 +1,7 @@
 extends layout.pug
 block content
-  main#editorjs
+  h1 #{doc.title}
+  main#editorjs(data-documentid=doc._id)
 block additional_scripts
   script(src="/static/js/editor.js")
     

@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1 #{title}
+
+  form(method='POST' action='')
+    div.form-group
+      label(for='name') New document:
+      input#title.form-control(type='text', placeholder='Title' name='title' value=(undefined===doc ? '' : doc.title))
+    button.btn.btn-primary(type='submit') Create
+
+  if errors
+   ul
+    for error in errors
+     li!= error.msg
