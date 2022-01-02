@@ -5,16 +5,9 @@ nav.navbar.navbar-expand-md.navbar-dark.bg-dark.fixed-top
   #navbarsExampleDefault.collapse.navbar-collapse
     ul.navbar-nav.mr-auto
       li.nav-item.active
-        a.nav-link(href='#')
-          | Home 
-          span.sr-only (current)
-      li.nav-item
-        a.nav-link(href='#') Link
-      li.nav-item
-        a.nav-link.disabled(href='#') Disabled
+        a.nav-link(href='/')
+          Home
       li.nav-item.dropdown
-        a#dropdown01.nav-link.dropdown-toggle(href='http://example.com' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false') Dropdown
+        a#dropdown01.nav-link.dropdown-toggle(href='' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false') Editor
         .dropdown-menu(aria-labelledby='dropdown01')
-          a.dropdown-item(href='#') Action
-          a.dropdown-item(href='#') Another action
-          a.dropdown-item(href='#') Something else here
+          a.dropdown-item(href='/editor/new') New
