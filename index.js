@@ -2,7 +2,7 @@ const fs = require('fs')
 const https = require('https')
 const config = require('./config')
 const { WebSocketServer } = require('ws');
-
+const ws_handler = require('./index.ws')
 const {app,server} = require('./app')
 
 //#region Mongo DB
@@ -23,7 +23,7 @@ const wss = new WebSocketServer({ server: wsserver });
 
 wss.on('connection', socket => {
   console.log("New connection")
-  socket.on('message', message => console.log(JSON.parse(message)));
+  socket.on('message', ws_handler(socket));
   socket.on('close', ()=> console.log("Connection closed"))
 });
 

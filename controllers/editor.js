@@ -25,7 +25,7 @@ exports.new = [
     console.log(req.body)
     // Create a genre object with escaped and trimmed data.
     const doc = new Document(
-      { title: req.body.title, content: "{}" }
+      { title: req.body.title, content: '{"time": 1641073386823,"blocks": [],"version": "2.22.2"}'}
     );
 
     if (!errors.isEmpty()) {
@@ -62,5 +62,17 @@ exports.new = [
 ];
 
 exports.update = function (socket,message) {
-  let doc = JSON.parse(message)
+  const data = message
+  const update = {content: data.content}
+  const id= data.id
+  Document.findByIdAndUpdate(id,update, () => {
+    socket.send("OK")
+  })
+}
+exports.load = function (socket,message) {
+  const data = message
+  const id= data.id
+  Document.findById(id, (err,doc) => {
+    socket.send(JSON.stringify({query: "load", body: doc}))
+  })
 }
