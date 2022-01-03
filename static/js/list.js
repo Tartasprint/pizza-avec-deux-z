@@ -1,4 +1,4 @@
-const websocket = new WebSocket("ws://localhost:3000/")
+const websocket = new WebSocket("wss://localhost:3000/")
 let deleteDocument = () => {}
 websocket.onopen = (_event) => {
     deleteDocument = function(id){

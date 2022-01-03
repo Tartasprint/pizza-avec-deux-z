@@ -2,7 +2,7 @@
 function main() {
     const documentINFO = document.getElementById('editorjs')
     const docId = documentINFO.dataset.documentid
-    const websocket = new WebSocket("ws://localhost:3000/")
+    const websocket = new WebSocket("wss://localhost:3000/")
     websocket.onmessage = (event) => {
         const query = JSON.parse(event.data)
         console.log("Received data", query)

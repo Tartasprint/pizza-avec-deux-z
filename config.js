@@ -1,10 +1,10 @@
 const fs=require('fs')
-exports.normal_port=3000
-exports.ws_port=3001
+const https = require('https')
+exports.app_port=3000
 exports.database='pizza-test'
 exports.mongodb_server_host="127.0.0.1"
 exports.mongodb_server_port="27017"
-exports.credentials={
+exports.server=https.createServer({
     key: fs.readFileSync('key.pem'),
     cert: fs.readFileSync('cert.pem')
-  }
+  })
