@@ -76,3 +76,13 @@ exports.load = function (socket,message) {
     socket.send(JSON.stringify({query: "load", body: doc}))
   })
 }
+
+exports.list = function (req,res) {
+  Document.find({}, function(err,docs){
+    res.render('list_documents',{title:"The documents", documents: docs})
+  })
+}
+
+exports.delete = function (socket,message) {
+  Document.findByIdAndRemove(message.id).exec()
+}

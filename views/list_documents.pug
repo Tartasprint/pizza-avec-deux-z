@@ -1,0 +1,12 @@
+extends layout
+
+block content
+  h1 #{title}
+  if documents
+   ul
+    for document in documents
+     li
+        a(href=document.edit_url)!= document.title
+        button(id=document._id type="button" class="btn btn-danger" onclick=document.delete_fn) Delete
+block additional_scripts
+  script(src="/static/js/list.js" defer=true)

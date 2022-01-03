@@ -44,7 +44,23 @@ function createEditor(){
          * Pass Tool's class or Settings object for each Tool you want to use 
          */
         tools: {
-            header: Header,
+            header: {
+                class: Header,
+                inlineToolbar: true
+            },
+            underline: Underline,
+            Marker: {
+                class: Marker,
+                shortcut: 'CMD+SHIFT+M',
+              },
+            paragraph: {
+                class: Paragraph,
+                inlineToolbar: true
+            },
+            inlineCode: {
+                class: InlineCode,
+                shortcut: 'CMD+E',
+              },
         },
         data: {},
     })

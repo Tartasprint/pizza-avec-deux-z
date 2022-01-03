@@ -14,10 +14,7 @@ db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 //#endregion
 
 //#region Websocket
-const wsserver = https.createServer({
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
-})
+const wsserver = https.createServer(config.credentials)
 const wss = new WebSocketServer({ server: wsserver });
 
 

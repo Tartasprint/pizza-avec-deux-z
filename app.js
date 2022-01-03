@@ -1,4 +1,5 @@
 const fs = require('fs')
+const https = require('https')
 const express = require('express');
 
 const tm = require('markdown-it-texmath');
@@ -10,7 +11,7 @@ const md = require('markdown-it')({ html: true })
   });
 
 const config = require('./config')
-const static = require('./static')
+const static = require('./routes/static')
 const editor = require('./routes/editor')
 
 const app = express();
@@ -32,6 +33,6 @@ app.get('/', function (req, res) {
 
 exports.app = app
 
-exports.server = app.listen(config.normal_port, function () {
+exports.server = https.createServer(config.credentials,app).listen(config.normal_port, function () {
     console.log(`Normal server listening on port ${config.normal_port}!`)
   });
