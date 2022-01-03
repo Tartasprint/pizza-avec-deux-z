@@ -61,19 +61,19 @@ exports.new = [
   }
 ];
 
-exports.update = function (socket,message) {
-  const data = message
+exports.update = function (ctx) {
+  const data = ctx.message.body
   const update = {content: data.content}
   const id= data.id
   Document.findByIdAndUpdate(id,update, () => {
-    socket.send("OK")
+    ctx.send("\"OK\"")
   })
 }
-exports.load = function (socket,message) {
-  const data = message
+exports.load = function (ctx) {
+  const data = ctx.message.body
   const id= data.id
   Document.findById(id, (err,doc) => {
-    socket.send(JSON.stringify({query: "load", body: doc}))
+    ctx.send(JSON.stringify({query: "load", body: doc}))
   })
 }
 
@@ -83,6 +83,6 @@ exports.list = function (req,res) {
   })
 }
 
-exports.delete = function (socket,message) {
-  Document.findByIdAndRemove(message.id).exec()
+exports.delete = function (ctx) {
+  Document.findByIdAndRemove(ctx.message.body.id).exec()
 }

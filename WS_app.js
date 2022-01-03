@@ -1,29 +1,22 @@
-const { WebSocketServer } = require('ws');
-editor = require('./controllers/editor')
+const Hexnut = require('hexnut')
+const handle = require('hexnut-handle')
+const bodyparser = require('hexnut-bodyparser')
+const config = require("./config")
+
+const editor = require('./controllers/editor')
 
 exports.WSApp = (server) => {
-    const wss = new WebSocketServer({ server: server });
-    function ws_handler(socket) {
-        function r(message) {
-            message=message.toString()
-            message=JSON.parse(message)
-            if(message.query === "update"){
-                console.log("UPDATE !")
-                editor.update(socket,message.body)
-            } else if(message.query === "load"){
-                console.log("LOAD !")
-                editor.load(socket,message.body)
-            } else if(message.query === "delete"){
-                console.log("DELETE !")
-                editor.delete(socket,message.body)
-            }
-        }
-        return r
-    }
-    wss.on('connection', socket => {
-      console.log("New connection")
-      socket.on('message', ws_handler(socket));
-      socket.on('close', ()=> console.log("Connection closed"))
-    });
-    return wss
+    const app = new Hexnut({ server: server });
+    app.use(bodyparser.json());
+    app.use(handle.connect(ctx => {
+        ctx.send('Welcome!');
+        ctx.state = {
+          messagesReceived: 0
+        };
+      }));
+    app.use(handle.matchMessage(msg => msg.query === "update", editor.update));
+    app.use(handle.matchMessage(msg => msg.query === "load", editor.load));
+    app.use(handle.matchMessage(msg => msg.query === "delete", editor.delete));
+    app.start()
+    return app
 }

@@ -5,7 +5,7 @@ function main() {
     const websocket = new WebSocket("wss://localhost:3000/")
     websocket.onmessage = (event) => {
         const query = JSON.parse(event.data)
-        console.log("Received data", query)
+        console.log("Received query:", query)
         if (query.query === "load") {
             savedData = JSON.parse(query.body.content)
             console.log('Rendering',savedData)
