@@ -1,3 +1,0 @@
-function send(dest,data) {
-    
-}

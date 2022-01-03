@@ -8,8 +8,8 @@ function main() {
         console.log("Received query:", query)
         if (query.query === "load") {
             savedData = JSON.parse(query.body.content)
-            console.log('Rendering',savedData)
-            if(savedData.blocks.length > 0) {
+            console.log('Rendering', savedData)
+            if (savedData.blocks.length > 0) {
                 editor.render(savedData)
             } else {
                 editor.blocks.clear()
@@ -18,7 +18,7 @@ function main() {
     }
     websocket.onopen = (_event) => websocket.send(JSON.stringify({ query: "load", body: { id: docId } }))
 
-    saveDocument =function () {
+    saveDocument = function () {
         editor.save().then((outputData) => {
             savedData = JSON.stringify(outputData)
             console.log('Article data: ', savedData)
@@ -27,18 +27,18 @@ function main() {
         }).catch((error) => {
             console.log('Saving failed: ', error)
         });
-    
+
     }
 }
 
-function createEditor(){
+function createEditor() {
     return new EditorJS({
         /** 
          * Id of Element that should contain the Editor 
          */
         holder: 'editorjs',
         autofocus: true,
-    
+
         /** 
          * Available Tools list. 
          * Pass Tool's class or Settings object for each Tool you want to use 
@@ -52,7 +52,7 @@ function createEditor(){
             Marker: {
                 class: Marker,
                 shortcut: 'CMD+SHIFT+M',
-              },
+            },
             paragraph: {
                 class: Paragraph,
                 inlineToolbar: true
@@ -60,7 +60,7 @@ function createEditor(){
             inlineCode: {
                 class: InlineCode,
                 shortcut: 'CMD+E',
-              },
+            },
         },
         data: {},
     })
@@ -69,11 +69,11 @@ function createEditor(){
 const editor = createEditor()
 Promise.all([
     editor.isReady,
-    new Promise((resolve,reject)=>{
-    window.addEventListener('load',(e) =>{
-        resolve()
-    })
-})])
-.then(main)
-let saveDocument = () => {}
+    new Promise((resolve, reject) => {
+        window.addEventListener('load', (e) => {
+            resolve()
+        })
+    })])
+    .then(main)
+let saveDocument = () => { }
 

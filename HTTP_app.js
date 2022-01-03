@@ -19,10 +19,10 @@ exports.HTTPApp = (server) => {
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
-  
+
   app.use('/static', static)
   app.use('/editor', editor)
-  
+
   app.get('/', function (req, res) {
     res.render('index', {
       title: 'Hey', content: md.render(
@@ -30,7 +30,7 @@ exports.HTTPApp = (server) => {
       )
     })
   })
-  
+
   server.on('request', app)
   return app
 }
