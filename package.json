@@ -43,5 +43,8 @@
     "mongoose": "^6.1.4",
     "pug": "^3.0.2",
     "ws": "^8.4.0"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
   }
 }
