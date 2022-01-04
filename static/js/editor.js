@@ -1,13 +1,15 @@
+const HexNutClient = require('hexnut-client')
+const handle = require('hexnut-handle')
+const bodyparser = require('hexnut-bodyparser')
 
 function main() {
     const documentINFO = document.getElementById('editorjs')
     const docId = documentINFO.dataset.documentid
-    const websocket = new WebSocket("wss://localhost:3000/")
-    websocket.onmessage = (event) => {
-        const query = JSON.parse(event.data)
-        console.log("Received query:", query)
-        if (query.query === "load") {
-            savedData = JSON.parse(query.body.content)
+    const client = new HexNutClient();
+    client.connect("wss://localhost:3000/");
+    client.use(bodyparser.json())
+    client.use(handle.matchMessage( msg => msg.query === 'load', ctx => {
+        savedData = JSON.parse(ctx.message.body.content)
             console.log('Rendering', savedData)
             if (savedData.blocks.length > 0) {
                 editor.render(savedData)
@@ -15,15 +17,17 @@ function main() {
                 editor.blocks.clear()
             }
         }
-    }
-    websocket.onopen = (_event) => websocket.send(JSON.stringify({ query: "load", body: { id: docId } }))
+    ))
+    client.use(handle.connect(ctx => {
+        ctx.send(JSON.stringify({ query: "load", body: { id: docId } }))
+    }))
 
     saveDocument = function () {
         editor.save().then((outputData) => {
             savedData = JSON.stringify(outputData)
             console.log('Article data: ', savedData)
             query = { query: "update", body: { id: docId, content: savedData } }
-            websocket.send(JSON.stringify(query));
+            client.send(JSON.stringify(query));
         }).catch((error) => {
             console.log('Saving failed: ', error)
         });

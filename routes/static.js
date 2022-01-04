@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 // define the home page route
-router.use('/', express.static('static'))
+router.use('/', express.static('dist'))
 router.use('/bootstrap', express.static('node_modules/bootstrap/dist'))
 router.use('/popper', express.static('node_modules/@popperjs/core/dist'))
 router.use('/jquery', express.static('node_modules/jquery/dist'))
