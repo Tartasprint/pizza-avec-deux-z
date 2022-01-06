@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo Choose a test command",
-    "start": "node tools/build-dist.js && node index.js",
+    "start": "sh tools/start.sh",
     "clean-dist": "node tools/clean-dist.js",
     "build-dist": "node tools/build-dist.js"
   },
