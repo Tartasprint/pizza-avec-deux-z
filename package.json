@@ -35,7 +35,7 @@
     "express-validator": "^6.14.0",
     "hexnut": "^0.6.0",
     "hexnut-bodyparser": "^1.0.0",
-    "hexnut-client": "^0.5.1",
+    "hexnut-client": "github:Tartasprint/hexnut-client",
     "hexnut-handle": "^1.1.0",
     "jade-bootstrap": "^1.0.14",
     "jquery": "^3.6.0",
