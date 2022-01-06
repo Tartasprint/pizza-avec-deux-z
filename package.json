@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo Choose a test command",
-    "start": "node index.js"
+    "start": "node tools/build-dist.js && node index.js",
+    "clean-dist": "node tools/clean-dist.js",
+    "build-dist": "node tools/build-dist.js"
   },
   "repository": {
     "type": "git",
@@ -45,6 +47,15 @@
     "ws": "^8.4.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.15"
+    "autoprefixer": "^10.4.1",
+    "cssnano": "^5.0.14",
+    "cssnano-preset-advanced": "^5.1.9",
+    "eslint": "^8.6.0",
+    "glob": "^7.2.0",
+    "glob-promise": "^4.2.2",
+    "nodemon": "^2.0.15",
+    "postcss": "^8.4.5",
+    "sleep": "^6.3.0",
+    "tinyify": "^3.0.0"
   }
 }
