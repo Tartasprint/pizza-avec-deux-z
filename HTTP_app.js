@@ -1,5 +1,7 @@
 const fs = require('fs')
 const express = require('express');
+const session = require('express-session')
+const MongoStore = require('connect-mongo')
 const tm = require('markdown-it-texmath');
 const md = require('markdown-it')({ html: true })
   .use(tm, {
@@ -10,7 +12,8 @@ const md = require('markdown-it')({ html: true })
 
 const static = require('./routes/static')
 const editor = require('./routes/editor')
-
+const user = require('./routes/user');
+const config = require('./config')
 
 exports.HTTPApp = (server) => {
   const app = express();
@@ -19,9 +22,26 @@ exports.HTTPApp = (server) => {
 
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
+  app.use(session({
+    name: "__Host-id",
+    resave: false,
+    saveUninitialized: false,
+    secret: config.sessions_secrets,
+    cookie: {
+      secure: true,
+      httpOnly: true,
+      sameSite: 'strict',
+      domain: undefined,
+      path: '/',
+    },
+    store: MongoStore.create({
+      mongoUrl: `mongodb://${config.mongodb_server_host}:${config.mongodb_server_port}/${config.sessions_database}`
+    })
+  }))
 
   app.use('/static', static)
   app.use('/editor', editor)
+  app.use('/auth', user)
 
   app.get('/', function (req, res) {
     res.render('index', {

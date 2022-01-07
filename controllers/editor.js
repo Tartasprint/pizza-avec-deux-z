@@ -4,6 +4,7 @@ const Document = require('../models/document')
 exports.edit = (req, res) => {
   Document.findById(req.params.docid)
     .exec(function (err, document) {
+      console.log(req.session.user)
       res.render('editor', { doc: document, title: "Edit" })
     })
 }
