@@ -2,8 +2,8 @@ const config = require('./config')
 const { WSApp } = require('./WS_app');
 const { HTTPApp } = require('./HTTP_app')
 
-const wsapp = WSApp(config.server)
-const httpapp = HTTPApp(config.server)
+const wsapp = WSApp(config.server, config.session_parser)
+const httpapp = HTTPApp(config.server, config.session_parser)
 
 //#region Mongo DB
 const mongoose = require('mongoose')
