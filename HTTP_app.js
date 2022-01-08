@@ -14,6 +14,7 @@ const static = require('./routes/static')
 const editor = require('./routes/editor')
 const user = require('./routes/user');
 const config = require('./config')
+const common_view_params = require('./middleware/common_view_params')
 
 exports.HTTPApp = (server) => {
   const app = express();
@@ -31,13 +32,15 @@ exports.HTTPApp = (server) => {
       secure: true,
       httpOnly: true,
       sameSite: 'strict',
-      domain: undefined,
+      domain: "",
       path: '/',
     },
     store: MongoStore.create({
       mongoUrl: `mongodb://${config.mongodb_server_host}:${config.mongodb_server_port}/${config.sessions_database}`
     })
   }))
+
+  app.use(common_view_params);
 
   app.use('/static', static)
   app.use('/editor', editor)

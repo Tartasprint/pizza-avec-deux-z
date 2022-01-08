@@ -13,7 +13,7 @@ const task = async () => {
       await fsp.mkdir(path.dirname(`${distDir}/${filename}`), { recursive: true });
       const output = fs.createWriteStream(`${distDir}/${filename}`);
       browserify(filename, { basedir: srcDir })
-        .plugin('tinyify').bundle().pipe(output);
+        .plugin('esmify').plugin('tinyify').bundle().pipe(output);
     }));
 }
 if (require.main === module) task()

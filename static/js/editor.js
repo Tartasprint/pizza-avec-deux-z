@@ -8,15 +8,15 @@ function main() {
     const client = new HexNutClient();
     client.connect("wss://localhost:3000/");
     client.use(bodyparser.json())
-    client.use(handle.matchMessage( msg => msg.query === 'load', ctx => {
+    client.use(handle.matchMessage(msg => msg.query === 'load', ctx => {
         savedData = JSON.parse(ctx.message.body.content)
-            console.log('Rendering', savedData)
-            if (savedData.blocks.length > 0) {
-                editor.render(savedData)
-            } else {
-                editor.blocks.clear()
-            }
+        console.log('Rendering', savedData)
+        if (savedData.blocks.length > 0) {
+            editor.render(savedData)
+        } else {
+            editor.blocks.clear()
         }
+    }
     ))
     client.use(handle.connect(ctx => {
         ctx.send(JSON.stringify({ query: "load", body: { id: docId } }))
@@ -79,5 +79,5 @@ Promise.all([
         })
     })])
     .then(main)
-let saveDocument = () => { }
+window.saveDocument = () => { }
 
