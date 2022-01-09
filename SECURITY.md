@@ -1,4 +1,7 @@
 # To do
 
  - Generation of session secrets
- - Implement WebSocket auth
+ - Handle all errors
+ - Sanitize inputs/outputs
+    - Forms
+    - Database requests
