@@ -19,7 +19,7 @@ exports.HTTPApp = (server, session_parser) => {
   const app = express();
 
   app.set('view engine', 'pug')
-
+  app.set('views', "../views")
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
   app.use(session_parser)
@@ -33,7 +33,7 @@ exports.HTTPApp = (server, session_parser) => {
   app.get('/', function (req, res) {
     res.render('index', {
       title: 'Hey', content: md.render(
-        fs.readFileSync('./page/test.md').toString()
+        fs.readFileSync('../page/test.md').toString()
       )
     })
   })

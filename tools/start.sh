@@ -5,5 +5,6 @@ then
     echo systemctl start mongod
     systemctl start mongod
 fi
-node tools/build-dist.js \
-&& node index.js
+node tools/build-dist.js &&\
+cd dist &&\
+node index.js
