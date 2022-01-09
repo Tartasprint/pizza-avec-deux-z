@@ -22,7 +22,9 @@ exports.WSApp = (server, sessionParser) => {
       });
     });
   });
-  app.use(handle.connect(ctx => console.log(ctx.requestHeaders)))
+  app.use(handle.connect(ctx => {
+    ctx.session = ctx.requestHeaders.session
+  }))
   app.use(handle.matchMessage(msg => msg.query === "update", editor.update));
   app.use(handle.matchMessage(msg => msg.query === "load", editor.load));
   app.use(handle.matchMessage(msg => msg.query === "delete", editor.delete));

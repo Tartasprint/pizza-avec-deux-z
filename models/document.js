@@ -3,6 +3,7 @@ const Schema = mongoose.Schema
 const DocumentSchema = new Schema({
   title: String,
   content: String,
+  owner: { type: Schema.Types.ObjectId, ref: 'User' }
 });
 
 DocumentSchema.virtual('edit_url')

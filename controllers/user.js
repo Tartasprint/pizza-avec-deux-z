@@ -8,7 +8,6 @@ exports.signup = [
     body('username').isEmail(),
     body('password').isLength({ min: 1, max: 64 }),
     (req, res, next) => {
-        console.log(req.body)
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(432).json({ errors: errors.array() });
@@ -34,7 +33,6 @@ exports.login = [
         .isHexadecimal()
         .withMessage('Password was not sent properly.'),
     (req, res, next) => {
-        console.log(req.body)
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json(errors.array());

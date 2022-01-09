@@ -4,8 +4,14 @@ const Document = require('../models/document')
 exports.edit = (req, res) => {
   Document.findById(req.params.docid)
     .exec(function (err, document) {
-      console.log(req.session.user)
-      res.render('editor', { doc: document, title: "Edit" })
+      console.log("Owner", document.owner)
+      console.log("User", req.session.user._id)
+
+      if (document.owner.equals(req.session.user._id)) {
+        res.render('editor', { doc: document, title: "Edit" })
+      } else {
+        res.status(403).render('unauthorized');
+      }
     })
 }
 
@@ -23,10 +29,13 @@ exports.new = [
 
     // Extract the validation errors from a request.
     const errors = validationResult(req);
-    console.log(req.body)
     // Create a genre object with escaped and trimmed data.
     const doc = new Document(
-      { title: req.body.title, content: '{"time": 1641073386823,"blocks": [],"version": "2.22.2"}' }
+      {
+        title: req.body.title,
+        content: '{"time": 1641073386823,"blocks": [],"version": "2.22.2"}',
+        owner: req.session.user._id,
+      }
     );
 
     if (!errors.isEmpty()) {
@@ -37,7 +46,7 @@ exports.new = [
     else {
       // Data from form is valid.
       // Check if Genre with same name already exists.
-      Document.findOne({ 'title': req.body.title })
+      Document.findOne({ 'title': req.body.title, 'owner': req.session.user._id })
         .exec(function (err, found_document) {
           if (err) { console.log("Ouhouh"); return next(err); }
 
@@ -66,24 +75,59 @@ exports.update = function (ctx) {
   const data = ctx.message.body
   const update = { content: data.content }
   const id = data.id
-  Document.findByIdAndUpdate(id, update, () => {
-    ctx.send("\"OK\"")
-  })
+  const user = ctx.session.user
+  if (user === undefined || user === null) {
+    ctx.send('\"unauthorized\"')
+  }
+  Document.findById(id).exec()
+    .then((doc) => {
+      if (doc.owner.equals(user._id)) {
+        Document.findByIdAndUpdate(id, update, () => {
+          ctx.send("\"OK\"")
+        })
+      } else {
+        ctx.send('\"unauthorized\"')
+      }
+    })
 }
 exports.load = function (ctx) {
   const data = ctx.message.body
   const id = data.id
+  const user = ctx.session.user
+  if (user === undefined || user === null) {
+    console.log('Bouh')
+    ctx.send('\"unauthorized\"')
+  }
   Document.findById(id, (err, doc) => {
-    ctx.send(JSON.stringify({ query: "load", body: doc }))
+    if (doc.owner.equals(user._id)) {
+      delete doc.owner
+      ctx.send(JSON.stringify({ query: "load", body: doc }))
+    } else {
+      ctx.send('\"unauthorized\"')
+    }
   })
 }
 
 exports.list = function (req, res) {
-  Document.find({}, function (err, docs) {
+  Document.find({ owner: req.session.user._id }, '-owner', function (err, docs) {
     res.render('list_documents', { title: "The documents", documents: docs })
   })
 }
 
 exports.delete = function (ctx) {
-  Document.findByIdAndRemove(ctx.message.body.id).exec()
+  const data = ctx.message.body
+  const id = data.id
+  const user = ctx.session.user
+  if (user === undefined || user === null) {
+    ctx.send('\"unauthorized\"')
+  }
+  Document.findById(id).exec()
+    .then((doc) => {
+      if (doc.owner.equals(user._id)) {
+        Document.findByIdAndRemove(ctx.message.body.id).exec()
+      } else {
+        ctx.send('\"unauthorized\"')
+      }
+    })
+
 }
