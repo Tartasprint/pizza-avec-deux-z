@@ -1,5 +1,5 @@
-var express = require('express');
-var router = express.Router();
+import express from 'express'
+let router = express.Router();
 
 // define the home page route
 router.use('/', express.static('dist'))
@@ -15,5 +15,5 @@ router.use('/editorjs/paragraph.js', express.static('../node_modules/@editorjs/p
 router.use('/editorjs/underline.js', express.static('../node_modules/@editorjs/underline/dist/bundle.js'))
 router.use('/editorjs/inline-code.js', express.static('../node_modules/@editorjs/inline-code/dist/bundle.js'))
 
-module.exports = router;
+export default router;
 

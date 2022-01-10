@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema
+import { default as mongoose } from 'mongoose';
+const { Schema, model } = mongoose
 const DocumentSchema = new Schema({
   title: String,
   content: String,
@@ -14,4 +14,4 @@ DocumentSchema.virtual('delete_fn')
   .get(function () {
     return 'deleteDocument(\'' + this._id + '\')';
   });
-module.exports = mongoose.model('Document', DocumentSchema); 
+export default model('Document', DocumentSchema); 

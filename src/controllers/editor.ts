@@ -1,7 +1,7 @@
-const { body, validationResult } = require("express-validator");
-const Document = require('../models/document')
+import { body, validationResult } from "express-validator";
+import Document from '../models/document'
 
-exports.edit = (req, res) => {
+export const edit = (req, res) => {
   Document.findById(req.params.docid)
     .exec(function (err, document) {
       console.log("Owner", document.owner)
@@ -15,11 +15,11 @@ exports.edit = (req, res) => {
     })
 }
 
-exports.new_form = (req, res) => {
+export const new_form = (req, res) => {
   res.render('new_doc_form', { title: 'Create a new document' });
 }
 
-exports.new = [
+export const new_doc = [
 
   // Validate and santize the name field.
   body('title', 'Document title required').trim().isLength({ min: 1 }).escape(),
@@ -71,7 +71,7 @@ exports.new = [
   }
 ];
 
-exports.update = function (ctx) {
+export const update = function (ctx) {
   const data = ctx.message.body
   const update = { content: data.content }
   const id = data.id
@@ -90,7 +90,7 @@ exports.update = function (ctx) {
       }
     })
 }
-exports.load = function (ctx) {
+export const load = function (ctx) {
   const data = ctx.message.body
   const id = data.id
   const user = ctx.session.user
@@ -108,13 +108,13 @@ exports.load = function (ctx) {
   })
 }
 
-exports.list = function (req, res) {
+export const list = function (req, res) {
   Document.find({ owner: req.session.user._id }, '-owner', function (err, docs) {
     res.render('list_documents', { title: "The documents", documents: docs })
   })
 }
 
-exports.delete = function (ctx) {
+export const deleteDoc = function (ctx) {
   const data = ctx.message.body
   const id = data.id
   const user = ctx.session.user

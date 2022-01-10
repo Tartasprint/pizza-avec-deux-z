@@ -1,21 +1,22 @@
-const fs = require('fs')
-const express = require('express');
+import fs from 'fs';
+import express from 'express';
 
-const tm = require('markdown-it-texmath');
-const md = require('markdown-it')({ html: true })
+import tm from 'markdown-it-texmath';
+import { default as markdown_it } from 'markdown-it'
+import { default as katex } from 'katex'
+const md = markdown_it({ html: true })
   .use(tm, {
-    engine: require('katex'),
+    engine: katex,
     delimiters: 'dollars',
     katexOptions: { macros: { "\\RR": "\\mathbb{R}" } }
   });
 
-const static = require('./routes/static')
-const editor = require('./routes/editor')
-const user = require('./routes/user');
-const config = require('./config')
-const common_view_params = require('./middleware/common_view_params')
+import staticR from './routes/static.js';
+import editor from './routes/editor.js';
+import user from './routes/user.js';
+import common_view_params from './middleware/common_view_params.js';
 
-exports.HTTPApp = (server, session_parser) => {
+export const HTTPApp = (server, session_parser) => {
   const app = express();
 
   app.set('view engine', 'pug')
@@ -26,7 +27,7 @@ exports.HTTPApp = (server, session_parser) => {
 
   app.use(common_view_params);
 
-  app.use('/static', static)
+  app.use('/static', staticR)
   app.use('/editor', editor)
   app.use('/auth', user)
 

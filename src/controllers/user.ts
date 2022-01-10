@@ -1,9 +1,10 @@
-const { body, validationResult } = require("express-validator");
-const bcrypt = require('bcrypt');
-const User = require('../models/user')
-const multer = require('multer')()
+import { body, validationResult } from "express-validator";
+import bcrypt from 'bcrypt';
+import User from '../models/user.js';
+import { default as multerMod } from 'multer'
+const multer = multerMod()
 
-exports.signup = [
+export const signup = [
     multer.none(),
     body('username').isEmail(),
     body('password').isLength({ min: 1, max: 64 }),
@@ -24,7 +25,7 @@ exports.signup = [
             })
             .catch(error => { console.log(error); res.status(500).json({ error }) });
     }];
-exports.login = [
+export const login = [
     multer.none(),
     body('username').isEmail().withMessage('Please provide an email'),
     body('password')
@@ -58,15 +59,15 @@ exports.login = [
             .catch(error => res.status(500).end());
     }];
 
-exports.login_page = (req, res, next) => {
+export const login_page = (req, res, next) => {
     res.render('login', { title: 'Log in' })
 };
 
-exports.signup_page = (req, res, next) => {
+export const signup_page = (req, res, next) => {
     res.render('signup', { title: 'Sign up' })
 };
 
-exports.logout = (req, res, next) => {
+export const logout = (req, res, next) => {
     req.session.destroy((err) => {
         res.redirect('/');
     })
