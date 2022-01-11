@@ -1,15 +1,15 @@
-const HexNutClient = require('hexnut-client')
-const handle = require('hexnut-handle')
-const bodyparser = require('hexnut-bodyparser')
+import HexNutClient from 'hexnut-client'
+import { matchMessage, connect } from 'hexnut-handle'
+import { json } from 'hexnut-bodyparser'
 
 function main() {
     const documentINFO = document.getElementById('editorjs')
     const docId = documentINFO.dataset.documentid
     const client = new HexNutClient();
     client.connect("wss://localhost:3000/");
-    client.use(bodyparser.json())
-    client.use(handle.matchMessage(msg => msg.query === 'load', ctx => {
-        savedData = JSON.parse(ctx.message.body.content)
+    client.use(json())
+    client.use(matchMessage(msg => msg.query === 'load', ctx => {
+        const savedData = JSON.parse(ctx.message.body.content)
         console.log('Rendering', savedData)
         if (savedData.blocks.length > 0) {
             editor.render(savedData)
@@ -18,15 +18,16 @@ function main() {
         }
     }
     ))
-    client.use(handle.connect(ctx => {
+    client.use(connect(ctx => {
+        console.log('Loading document...')
         ctx.send(JSON.stringify({ query: "load", body: { id: docId } }))
     }))
 
     saveDocument = function () {
         editor.save().then((outputData) => {
-            savedData = JSON.stringify(outputData)
+            const savedData = JSON.stringify(outputData)
             console.log('Article data: ', savedData)
-            query = { query: "update", body: { id: docId, content: savedData } }
+            const query = { query: "update", body: { id: docId, content: savedData } }
             client.send(JSON.stringify(query));
         }).catch((error) => {
             console.log('Saving failed: ', error)

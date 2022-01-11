@@ -1,14 +1,14 @@
-const config = require('./config')
-const { WSApp } = require('./WS_app');
-const { HTTPApp } = require('./HTTP_app')
+import *  as config from './config';
+import { WSApp } from './WS_app.js';
+import { HTTPApp } from './HTTP_app.js';
 
 const wsapp = WSApp(config.server, config.session_parser)
 const httpapp = HTTPApp(config.server, config.session_parser)
 
 //#region Mongo DB
-const mongoose = require('mongoose')
+import mongoose from 'mongoose';
 const mongoDB = `mongodb://${config.mongodb_server_host}:${config.mongodb_server_port}/${config.database}`;
-mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(mongoDB, {});
 var db = mongoose.connection
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 //#endregion

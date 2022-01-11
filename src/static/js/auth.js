@@ -29,7 +29,6 @@ let main = () => {
                 } else if (res.status === 400) {
                     res.json().then((errors) => {
                         for (error of errors) {
-                            console.log(error)
                             createAlert('danger', "Error", error.msg)
                         }
                     })

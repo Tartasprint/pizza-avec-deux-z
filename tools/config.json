@@ -1,4 +1,4 @@
 {
-    "distDir": "dist",
-    "srcDir": "static"
+    "distDir": "dist/dist",
+    "srcDir": "src/static"
 }

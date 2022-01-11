@@ -1,0 +1,139 @@
+import { body, validationResult } from "express-validator";
+import { Document } from '../models/document'
+import { Request, RequestHandler, Response } from "express";
+import { ExpressResponse, HexnutCtx } from "../models/session.js";
+import { default as mongoose } from "mongoose";
+import { SaveResult } from "../lib/model.js";
+
+
+
+
+
+
+interface EditReqParams {
+  docid: string
+}
+export const edit = (req: Request<EditReqParams>, res: ExpressResponse) => {
+  let id = new mongoose.Types.ObjectId(req.params.docid)
+  Document.findById(id)
+    .then((doc) => {
+      if (!doc?.is_owner(res.locals.user)) {
+        res.status(403).render('unauthorized');
+      } else {
+        res.render('editor', { doc: doc, title: "Edit" })
+      }
+    })
+}
+
+export const new_form = (req: Request, res: ExpressResponse) => {
+  res.render('new_doc_form', { title: 'Create a new document' });
+}
+
+interface NewDocRecBody {
+  title: string
+}
+export const new_doc: RequestHandler[] = [
+
+  // Validate and santize the name field.
+  body('title', 'Document title required').trim().isLength({ min: 1 }).escape(),
+  // Process request after validation and sanitization.
+  (req: Request<{}, {}, NewDocRecBody>, res: ExpressResponse) => {
+    if (res.locals.user === null) {
+      res.status(400).render('unauthorized');
+      return;
+    }
+    // Extract the validation errors from a request.
+    const errors = validationResult(req);
+    // Create a genre object with escaped and trimmed data.
+    const doc = Document.create(
+      req.body.title,
+      '{"time": 1641073386823,"blocks": [],"version": "2.22.2"}',
+      res.locals.user.id,
+    );
+
+    if (!errors.isEmpty()) {
+      // There are errors. Render the form again with sanitized values/error messages.
+      res.render('new_doc_form', { title: 'Create Document', doc: doc, errors: errors.array() });
+      return;
+    }
+    else {
+      // Data from form is valid.
+      // Check if Genre with same name already exists.
+      Document.findbyTitle(req.body.title, res.locals.user)
+        .then((found_document) => {
+          if (found_document) {
+            // Genre exists, redirect to its detail page.
+            res.redirect(found_document.edit_url);
+          }
+          else {
+            doc.save().then((result) => {
+              if (result === SaveResult.Failed) res.status(500).render('unauthorized')
+              else res.redirect(doc.edit_url)
+            })
+          }
+        })
+    }
+  }
+];
+
+export const update = function (ctx: { message: { body: any; }; session: { user: any; }; send: (arg0: string) => void; }) {
+  const data = ctx.message.body
+  const update = { content: data.content }
+  const id = data.id
+  const user = ctx.session.user
+  if (user === null) {
+    ctx.send('\"unauthorized\"')
+  }
+  Document.findById(id)
+    .then((doc) => {
+      if (doc === null || !doc.is_owner(ctx.session.user)) {
+        ctx.send('\"unauthorized\"')
+      } else {
+        doc.content = data.content
+        doc.save()
+      }
+    })
+}
+export const load = function (ctx: HexnutCtx) {
+  const data = ctx.message.body
+  const id = data.id
+  const user = ctx.session.user
+  if (user === null) {
+    ctx.send('\"unauthorized\"')
+  } else {
+    Document.findById(id).then(
+      (doc: Document) => {
+        if (doc.is_owner(user)) {
+          ctx.send(JSON.stringify({ query: "load", body: doc.client_content }))
+        } else {
+          ctx.send('\"unauthorized\"')
+        }
+      })
+  }
+}
+
+export const list = function (req: Request, res: ExpressResponse) {
+  if (res.locals.user === null) return res.render('unauthorized');
+  Document.getOwned(res.locals.user).then((docs) => {
+    res.render('list_documents', { title: "The documents", documents: docs })
+  }
+  )
+}
+
+export const deleteDoc = function (ctx: { message: { body: { id: any; }; }; session: { user: any; }; send: (arg0: string) => void; }) {
+  const data = ctx.message.body
+  const id = data.id
+  const user = ctx.session.user
+  if (user === null) {
+    ctx.send('\"unauthorized\"')
+  }
+  Document.findById(id)
+    .then((doc) => {
+      if (doc === null || !doc.is_owner(user)) {
+        ctx.send('\"unauthorized\"')
+      } else {
+        doc.remove()
+      }
+    })
+
+}

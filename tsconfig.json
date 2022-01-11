@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+        "module": "ES2020",
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "outDir": "dist",
+        "allowJs": true,
+        "strictNullChecks": true,
+        "baseUrl": "./src",
+        "moduleResolution": "node",
+        "allowSyntheticDefaultImports": true,
+        "target": "ESNext",
+        "lib": [
+            "ESNext"
+        ],
+        "noErrorTruncation": true
+    },
+    "include": [
+        "src/**/*"
+    ],
+    "exclude": [
+        "src/static/**"
+    ]
+}
