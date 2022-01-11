@@ -18,7 +18,7 @@ export const signup = [
         const password = new ClientHashedPassword(req.body.password);
         password.serverHashed()
             .then((password) => {
-                const user = new User(req.body.username, password);
+                const user = User.create(req.body.username, password);
                 user.save().then(() => res.redirect('/'))
             })
             .catch(() => { }

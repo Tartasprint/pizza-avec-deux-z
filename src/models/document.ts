@@ -58,15 +58,15 @@ export class Document implements Model {
   }
 
   async get_owner(): Promise<User | null> {
-    return User.from_id(this.#model.owner)
+    return User.findById(this.#model.owner)
   }
 
   set owner(u: User) {
-    this.#model.owner = u.id
+    this.#model.owner = new mongoose.Types.ObjectId(u.id)
   }
 
   private get id(): ObjectId {
-    return new mongoose.mongo.ObjectId(this.#model._id)
+    return new ObjectId(this.#model._id)
   }
 
   static async findbyTitle(title: string, owner: User): Promise<Document | null> {
