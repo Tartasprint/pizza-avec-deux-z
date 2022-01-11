@@ -1,4 +1,4 @@
-import *  as config from './config.js';
+import *  as config from './config';
 import { WSApp } from './WS_app.js';
 import { HTTPApp } from './HTTP_app.js';
 

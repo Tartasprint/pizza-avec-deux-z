@@ -2,6 +2,6 @@ extends layout.pug
 block content
   h1 #{doc.title}
   button(onclick="saveDocument()") Save document
-  main#editorjs(data-documentid=doc._id)
+  main#editorjs(data-documentid=doc.id)
 block additional_scripts
   script(src="/static/js/editor.js" defer=true)

@@ -15,8 +15,9 @@ import staticR from './routes/static.js';
 import editor from './routes/editor.js';
 import user from './routes/user.js';
 import common_view_params from './middleware/common_view_params.js';
+import { Server } from 'https'
 
-export const HTTPApp = (server, session_parser) => {
+export const HTTPApp = (server: Server, session_parser: express.RequestHandler) => {
   const app = express();
 
   app.set('view engine', 'pug')

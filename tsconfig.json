@@ -6,9 +6,15 @@
         "sourceMap": true,
         "outDir": "dist",
         "allowJs": true,
+        "strictNullChecks": true,
         "baseUrl": "./src",
         "moduleResolution": "node",
-        "allowSyntheticDefaultImports": true
+        "allowSyntheticDefaultImports": true,
+        "target": "ESNext",
+        "lib": [
+            "ESNext"
+        ],
+        "noErrorTruncation": true
     },
     "include": [
         "src/**/*"

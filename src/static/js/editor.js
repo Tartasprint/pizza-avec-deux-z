@@ -19,6 +19,7 @@ function main() {
     }
     ))
     client.use(connect(ctx => {
+        console.log('Loading document...')
         ctx.send(JSON.stringify({ query: "load", body: { id: docId } }))
     }))
 
@@ -79,5 +80,5 @@ Promise.all([
         })
     })])
     .then(main)
-var saveDocument = () => { }
+window.saveDocument = () => { }
 

@@ -1,31 +1,30 @@
 import { body, validationResult } from "express-validator";
 import bcrypt from 'bcrypt';
-import User from '../models/user.js';
+import { User } from '../models/user.js';
 import { default as multerMod } from 'multer'
+import { RequestHandler, Request, Response, NextFunction } from "express";
+import { ClientHashedPassword } from "../models/password.js";
 const multer = multerMod()
 
 export const signup = [
     multer.none(),
     body('username').isEmail(),
     body('password').isLength({ min: 1, max: 64 }),
-    (req, res, next) => {
+    (req: Request<{}, {}, { password: string, username: string }>, res: Response, next: NextFunction) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(432).json({ errors: errors.array() });
         }
-        bcrypt.hash(req.body.password, 10)
-            .then(hash => {
-                const user = new User({
-                    email: req.body.username,
-                    password: hash
-                });
-                user.save()
-                    .then(() => res.redirect('/'))
-                    .catch(error => res.status(431).send());
+        const password = new ClientHashedPassword(req.body.password);
+        password.serverHashed()
+            .then((password) => {
+                const user = new User(req.body.username, password);
+                user.save().then(() => res.redirect('/'))
             })
-            .catch(error => { console.log(error); res.status(500).json({ error }) });
+            .catch(() => { }
+            )
     }];
-export const login = [
+export const login: RequestHandler[] = [
     multer.none(),
     body('username').isEmail().withMessage('Please provide an email'),
     body('password')
@@ -33,41 +32,33 @@ export const login = [
         .isLowercase()
         .isHexadecimal()
         .withMessage('Password was not sent properly.'),
-    (req, res, next) => {
+    (req: Request<{}, {}, { username: string, password: string }>, res, next) => {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
             return res.status(400).json(errors.array());
         }
-        User.findOne({ email: req.body.username })
-            .then(user => {
-                if (!user) {
+        User.auth_user(req.body.username, new ClientHashedPassword(req.body.password))
+            .then((result) => {
+                if (result === null || result.valid === false) {
                     return res.status(403).end();
-                }
-                bcrypt.compare(req.body.password, user.password)
-                    .then(valid => {
-                        if (!valid) {
-                            return res.status(403).end();
-                        } else {
-                            req.session.regenerate((err) => {
-                                req.session.user = user
-                                res.redirect('/')
-                            })
-                        }
+                } else {
+                    req.session.regenerate((err) => {
+                        req.session.userID = result.user.id.toHexString()
+                        res.redirect('/')
                     })
-                    .catch(error => { console.log(error); res.status(500).end() });
+                }
             })
-            .catch(error => res.status(500).end());
     }];
 
-export const login_page = (req, res, next) => {
+export const login_page: RequestHandler = (req, res, next) => {
     res.render('login', { title: 'Log in' })
 };
 
-export const signup_page = (req, res, next) => {
+export const signup_page: RequestHandler = (req, res, next) => {
     res.render('signup', { title: 'Sign up' })
 };
 
-export const logout = (req, res, next) => {
+export const logout: RequestHandler = (req, res, next) => {
     req.session.destroy((err) => {
         res.redirect('/');
     })
