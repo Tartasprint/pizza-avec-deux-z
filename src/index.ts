@@ -2,8 +2,8 @@ import *  as config from './config';
 import { WSApp } from './WS_app.js';
 import { HTTPApp } from './HTTP_app.js';
 
-const wsapp = WSApp(config.server, config.session_parser)
-const httpapp = HTTPApp(config.server, config.session_parser)
+WSApp(config.server, config.session_parser)
+HTTPApp(config.server, config.session_parser)
 
 //#region Mongo DB
 import mongoose from 'mongoose';

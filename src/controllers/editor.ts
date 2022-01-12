@@ -1,6 +1,6 @@
 import { body, validationResult } from "express-validator";
 import { Document } from '../models/document'
-import { Request, RequestHandler, Response } from "express";
+import { NextFunction, Request, RequestHandler } from "express";
 import { ExpressResponse, HexnutCtx } from "../models/session.js";
 import { default as mongoose } from "mongoose";
 import { SaveResult } from "../lib/model.js";
@@ -37,7 +37,8 @@ export const new_doc: RequestHandler[] = [
   // Validate and santize the name field.
   body('title', 'Document title required').trim().isLength({ min: 1 }).escape(),
   // Process request after validation and sanitization.
-  (req: Request<{}, {}, NewDocRecBody>, res: ExpressResponse) => {
+  // @ts-expect-error
+  (req: Request<{}, {}, NewDocRecBody>, res: ExpressResponse, next: NextFunction) => {
     if (res.locals.user === null) {
       res.status(400).render('unauthorized');
       return;
@@ -78,7 +79,6 @@ export const new_doc: RequestHandler[] = [
 
 export const update = function (ctx: { message: { body: any; }; session: { user: any; }; send: (arg0: string) => void; }) {
   const data = ctx.message.body
-  const update = { content: data.content }
   const id = data.id
   const user = ctx.session.user
   if (user === null) {
@@ -102,11 +102,11 @@ export const load = function (ctx: HexnutCtx) {
     ctx.send('\"unauthorized\"')
   } else {
     Document.findById(id).then(
-      (doc: Document) => {
-        if (doc.is_owner(user)) {
-          ctx.send(JSON.stringify({ query: "load", body: doc.client_content }))
-        } else {
+      (doc: Document | null) => {
+        if (doc === null || !doc.is_owner(user)) {
           ctx.send('\"unauthorized\"')
+        } else {
+          ctx.send(JSON.stringify({ query: "load", body: doc.client_content }))
         }
       })
   }

@@ -1,5 +1,4 @@
 import { body, validationResult } from "express-validator";
-import bcrypt from 'bcrypt';
 import { User } from '../models/user.js';
 import { default as multerMod } from 'multer'
 import { RequestHandler, Request, Response, NextFunction } from "express";
@@ -23,6 +22,7 @@ export const signup = [
             })
             .catch(() => { }
             )
+        return
     }];
 export const login: RequestHandler[] = [
     multer.none(),
@@ -44,10 +44,14 @@ export const login: RequestHandler[] = [
                 } else {
                     req.session.regenerate((err) => {
                         req.session.userID = result.user.id.toHexString()
-                        res.redirect('/')
+                        return res.redirect('/')
                     })
                 }
             })
+            .catch((e) => {
+                return res.status(500).redirect('/')
+            })
+        return;
     }];
 
 export const login_page: RequestHandler = (req, res, next) => {

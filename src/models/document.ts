@@ -1,4 +1,4 @@
-import { default as mongoose, Mongoose } from 'mongoose';
+import { default as mongoose } from 'mongoose';
 const { Schema, model } = mongoose
 import { Model, SaveResult } from '../lib/model.js'
 import { User } from './user.js';

@@ -1,6 +1,8 @@
-import { default as mongoose, Document } from 'mongoose';
+import { default as mongoose } from 'mongoose';
 const { Schema, model } = mongoose;
+// @ts-ignore
 import uniqueValidator from 'mongoose-unique-validator';
+
 import { ObjectId } from 'mongodb'
 import { ClientHashedPassword, ServerHashedPassword } from './password.js';
 import { Model, SaveResult } from '../lib/model.js'

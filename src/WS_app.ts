@@ -5,25 +5,29 @@ import bodyparser from 'hexnut-bodyparser'
 import * as editor from './controllers/editor.js'
 import { load_user } from './middleware/common_view_params'
 import { Ctx as CtxExt } from './models/websocket.js'
+import { Request } from 'express'
+import { Server } from 'https'
 /**
  * @param{https.Server} server
  */
-export const WSApp = (server, sessionParser) => {
+export const WSApp = (server: Server, sessionParser: (req: Request, res: any, next: () => void) => void) => {
   const app = new Hexnut<CtxExt>({ noServer: true });
   app.use(bodyparser.json());
-  server.on('upgrade', function (request, socket, head) {
+  server.on('upgrade', function (request: Request, socket, head) {
     sessionParser(request, {}, () => {
-      // @ts-ignore: Unreachable code error
+      // @ts-ignore
       app.server.handleUpgrade(request, socket, head, function (ws) { // @ts-ignore
         load_user(request).then((user) => {
+          // @ts-ignore
           request.ws_ctx = { user: user }
-          // @ts-ignore: Unreachable code error
+          // @ts-ignore
           app.server.emit('connection', ws, request);
         })
       });
     });
   });
   app.use(handle.connect(ctx => {
+    // @ts-ignore
     ctx.session = ctx['@@WebsocketRequest'].ws_ctx
   }))
   app.use(handle.matchMessage(msg => msg.query === "update", editor.update));

@@ -1,4 +1,4 @@
-import { Request } from "express";
+import { NextFunction, Request } from "express";
 import { User } from "../models/user.js";
 import { ExpressResponse } from "../models/session";
 import { ObjectId } from "mongodb";
@@ -9,7 +9,7 @@ export const load_user = async (req: Request): Promise<User | null> => {
     }
 }
 
-export default async (req: Request, res: ExpressResponse, next) => {
+export default async (req: Request, res: ExpressResponse, next: NextFunction) => {
     res.locals.user = await load_user(req);
     next();
 }

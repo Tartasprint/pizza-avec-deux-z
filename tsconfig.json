@@ -6,15 +6,28 @@
         "sourceMap": true,
         "outDir": "dist",
         "allowJs": true,
-        "strictNullChecks": true,
         "baseUrl": "./src",
         "moduleResolution": "node",
-        "allowSyntheticDefaultImports": true,
         "target": "ESNext",
         "lib": [
             "ESNext"
         ],
-        "noErrorTruncation": true
+        "noErrorTruncation": true,
+        "strictNullChecks": true,
+        "allowSyntheticDefaultImports": true,
+        "alwaysStrict": true,
+        "strictPropertyInitialization": true,
+        "noImplicitAny": true,
+        "exactOptionalPropertyTypes": true,
+        "noImplicitOverride": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noUncheckedIndexedAccess": true,
+        "noUnusedLocals": true,
+        "strictBindCallApply": true,
+        "strictFunctionTypes": true,
+        "useUnknownInCatchVariables": true,
+        "strict": true,
     },
     "include": [
         "src/**/*"
