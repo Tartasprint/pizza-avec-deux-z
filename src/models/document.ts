@@ -20,7 +20,7 @@ const DocumentModel: mongoose.Model<DocumentInterface, {}, {}, {}> = model('Docu
 type MongooseDoc = mongoose.HydratedDocument<DocumentInterface>;
 export class Document implements Model {
   #model: MongooseDoc
-  private constructor(model: MongooseDoc) {
+  constructor(model: MongooseDoc) {
     this.#model = model
   }
   static create(title: string, content: string, owner: ObjectId) {

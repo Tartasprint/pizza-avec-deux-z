@@ -6,7 +6,7 @@ then
     systemctl start mongod
 fi
 node tools/clean-dist.cjs &&\
-node tools/build-dist.cjs &
+node tools/build-dist.cjs &&\
 cd dist &&\
 node \
 --es-module-specifier-resolution=node index.js \

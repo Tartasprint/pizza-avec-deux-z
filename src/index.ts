@@ -1,9 +1,11 @@
-import *  as config from './config';
+import *  as config from './config/index.js';
 import { WSApp } from './WS_app.js';
 import { HTTPApp } from './HTTP_app.js';
-
-WSApp(config.server, config.session_parser)
-HTTPApp(config.server, config.session_parser)
+import { initOso } from './config/initOso.js';
+initOso().then((oso) => {
+  WSApp(config.server, config.session_parser, oso)
+  HTTPApp(config.server, config.session_parser, oso)
+})
 
 //#region Mongo DB
 import mongoose from 'mongoose';

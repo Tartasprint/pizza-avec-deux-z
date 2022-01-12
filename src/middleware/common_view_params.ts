@@ -10,6 +10,8 @@ export const load_user = async (req: Request): Promise<User | null> => {
 }
 
 export default async (req: Request, res: ExpressResponse, next: NextFunction) => {
+    //@ts-expect-error
+    res.locals = res.app.locals
     res.locals.user = await load_user(req);
     next();
 }

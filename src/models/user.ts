@@ -22,7 +22,7 @@ type MongooseUsr = mongoose.HydratedDocument<UserInteface>
 const UserModel = model('User', userSchema);
 export class User implements Model {
     #model: MongooseUsr
-    private constructor(model: MongooseUsr) {
+    constructor(model: MongooseUsr) {
         this.#model = model;
     }
 

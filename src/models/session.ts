@@ -8,12 +8,21 @@ declare module 'express-session' {
 
 import { SessionData } from 'express-session';
 import { Ctx } from 'hexnut';
+import { TOso } from 'config/initOso';
 
-interface ExpressLocals {
+
+export interface ExpressLocalsApp {
+    oso: TOso
+}
+
+
+interface ExpressLocals extends ExpressLocalsApp {
     user: User | null
 }
-type ExpressResponse = Response<{}, ExpressLocals>
-interface CtxExt { session: { user: User | null } }
-type HexnutCtx = Ctx<CtxExt>
 
-export { SessionData, ExpressLocals, ExpressResponse, HexnutCtx }
+type ExpressResponse = Response<{}, ExpressLocals>
+interface CtxExt { session: { user: User | null }, oso: TOso }
+export type HexnutCtx = Ctx<CtxExt>
+export type HexnutExt = CtxExt
+
+export { SessionData, ExpressLocals, ExpressResponse }

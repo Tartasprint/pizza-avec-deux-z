@@ -4,28 +4,24 @@ import { NextFunction, Request, RequestHandler } from "express";
 import { ExpressResponse, HexnutCtx } from "../models/session.js";
 import { default as mongoose } from "mongoose";
 import { SaveResult } from "../lib/model.js";
-
-
-
-
-
-
+import { asyncHandler } from '../lib/asyncRoutes.js'
 interface EditReqParams {
   docid: string
 }
-export const edit = (req: Request<EditReqParams>, res: ExpressResponse) => {
+export const edit = asyncHandler(async (req: Request<EditReqParams>, res: ExpressResponse) => {
+  console.log(res.locals)
   let id = new mongoose.Types.ObjectId(req.params.docid)
-  Document.findById(id)
-    .then((doc) => {
-      if (!doc?.is_owner(res.locals.user)) {
-        res.status(403).render('unauthorized');
-      } else {
-        res.render('editor', { doc: doc, title: "Edit" })
-      }
-    })
-}
+  let doc = await Document.findById(id);
+  if (res.locals.user === null || doc === null) {
+    res.status(403).render('unauthorized');
+  } else {
+    await res.locals.oso.authorize(res.locals.user, "read", doc);
+    res.render('editor', { doc: doc, title: "Edit" })
+  }
+  return
+})
 
-export const new_form = (req: Request, res: ExpressResponse) => {
+export const new_form = async (req: Request, res: ExpressResponse) => {
   res.render('new_doc_form', { title: 'Create a new document' });
 }
 
@@ -45,7 +41,6 @@ export const new_doc: RequestHandler[] = [
     }
     // Extract the validation errors from a request.
     const errors = validationResult(req);
-    // Create a genre object with escaped and trimmed data.
     const doc = Document.create(
       req.body.title,
       '{"time": 1641073386823,"blocks": [],"version": "2.22.2"}',
@@ -53,17 +48,13 @@ export const new_doc: RequestHandler[] = [
     );
 
     if (!errors.isEmpty()) {
-      // There are errors. Render the form again with sanitized values/error messages.
       res.render('new_doc_form', { title: 'Create Document', doc: doc, errors: errors.array() });
       return;
     }
     else {
-      // Data from form is valid.
-      // Check if Genre with same name already exists.
       Document.findbyTitle(req.body.title, res.locals.user)
         .then((found_document) => {
           if (found_document) {
-            // Genre exists, redirect to its detail page.
             res.redirect(found_document.edit_url);
           }
           else {
@@ -77,7 +68,7 @@ export const new_doc: RequestHandler[] = [
   }
 ];
 
-export const update = function (ctx: { message: { body: any; }; session: { user: any; }; send: (arg0: string) => void; }) {
+export const update = function (ctx: HexnutCtx) {
   const data = ctx.message.body
   const id = data.id
   const user = ctx.session.user
@@ -120,7 +111,7 @@ export const list = function (req: Request, res: ExpressResponse) {
   )
 }
 
-export const deleteDoc = function (ctx: { message: { body: { id: any; }; }; session: { user: any; }; send: (arg0: string) => void; }) {
+export const deleteDoc = function (ctx: HexnutCtx) {
   const data = ctx.message.body
   const id = data.id
   const user = ctx.session.user
@@ -128,11 +119,16 @@ export const deleteDoc = function (ctx: { message: { body: { id: any; }; }; sess
     ctx.send('\"unauthorized\"')
   }
   Document.findById(id)
-    .then((doc) => {
-      if (doc === null || !doc.is_owner(user)) {
-        ctx.send('\"unauthorized\"')
+    .then(async (doc) => {
+      if (doc !== null && ctx.session.user !== null) {
+        try {
+          await ctx.oso.authorize(ctx.session.user, "write", doc);
+          doc.remove()
+        } catch {
+          ctx.send('\"unauthorized\"')
+        }
       } else {
-        doc.remove()
+        ctx.send('\"unauthorized\"')
       }
     })
 
