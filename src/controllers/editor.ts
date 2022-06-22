@@ -8,16 +8,57 @@ import { asyncHandler } from '../lib/asyncRoutes.js'
 interface EditReqParams {
   docid: string
 }
+
+export class EditorController {
+  async edit(req: Request, res: ExpressResponse): Promise<void> {
+    let id = new mongoose.Types.ObjectId(req.params.docid)
+    let doc = await Document.findById(id);
+    await res.locals.oso.authorize(res.locals.user, "read", doc);
+    res.render('editor', { doc: doc, title: "Edit" })
+    return;
+  }
+
+  async new_doc(req: Request<{}, {}, NewDocRecBody>, res: ExpressResponse, next: NextFunction): Promise<void> {
+    if (res.locals.user === null) {
+      res.status(400).render('unauthorized');
+      return;
+    }
+    const errors = validationResult(req);
+    const doc = Document.create(
+      req.body.title,
+      '{"time": 1641073386823,"blocks": [],"version": "2.22.2"}',
+      res.locals.user.id,
+    );
+
+    if (!errors.isEmpty()) {
+      res.render('new_doc_form', { title: 'Create Document', doc: doc, errors: errors.array() });
+      return;
+    }
+    else {
+      Document.findbyTitle(req.body.title, res.locals.user)
+        .then((found_document) => {
+          if (found_document) {
+            res.redirect(found_document.edit_url);
+          }
+          else {
+            doc.save().then((result) => {
+              if (result === SaveResult.Failed) res.status(500).render('unauthorized')
+              else res.redirect(doc.edit_url)
+            })
+          }
+        })
+    }
+  }
+
+}
+
 export const edit = asyncHandler(async (req: Request<EditReqParams>, res: ExpressResponse) => {
   console.log(res.locals)
   let id = new mongoose.Types.ObjectId(req.params.docid)
   let doc = await Document.findById(id);
-  if (res.locals.user === null || doc === null) {
-    res.status(403).render('unauthorized');
-  } else {
-    await res.locals.oso.authorize(res.locals.user, "read", doc);
-    res.render('editor', { doc: doc, title: "Edit" })
-  }
+  res.status(403).render('unauthorized');
+  await res.locals.oso.authorize(null, "read", doc as Document);
+  res.render('editor', { doc: doc, title: "Edit" })
   return
 })
 
